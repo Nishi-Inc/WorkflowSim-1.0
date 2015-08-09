@@ -15,11 +15,6 @@
  */
 package org.workflowsim;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Vm;
@@ -28,6 +23,8 @@ import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.workflowsim.reclustering.ReclusteringEngine;
 import org.workflowsim.utils.Parameters;
+
+import java.util.*;
 
 /**
  * WorkflowEngine represents a engine acting on behalf of a user. It hides VM
@@ -118,7 +115,7 @@ public final class WorkflowEngine extends SimEntity {
             return this.vmList;
         }
         else{
-            List list = new ArrayList();
+            List<Vm> list = new ArrayList<>();
             for(int i = 0;i < getSchedulers().size();i ++){
                 list.addAll(getScheduler(i).getVmList());
             }
@@ -178,13 +175,13 @@ public final class WorkflowEngine extends SimEntity {
     }
 
     /**
-     * Binds a scheduler with a datacenter.
+     * Binds a scheduler with a dataCenter.
      *
-     * @param datacenterId the data center id
+     * @param dataCenterId the data center id
      * @param schedulerId the scheduler id
      */
-    public void bindSchedulerDatacenter(int datacenterId, int schedulerId) {
-        getScheduler(schedulerId).bindSchedulerDatacenter(datacenterId);
+    public void bindSchedulerDatacenter(int dataCenterId, int schedulerId) {
+        getScheduler(schedulerId).bindSchedulerDatacenter(dataCenterId);
     }
 
     /**
@@ -236,7 +233,7 @@ public final class WorkflowEngine extends SimEntity {
 
     /**
      * Overrides this method when making a new and different type of Broker.
-     * This method is called by {@link #body()} for incoming unknown tags.
+     * This method is called by {@link #processEvent(SimEvent)} for incoming unknown tags.
      *
      * @param ev a SimEvent object
      */
@@ -383,7 +380,7 @@ public final class WorkflowEngine extends SimEntity {
      * Sets the job list.
      *
      * @param <T> the generic type
-     * @param cloudletList the new job list
+     * @param jobsList the new job list
      */
     private <T extends Cloudlet> void setJobsList(List<T> jobsList) {
         this.jobsList = jobsList;
@@ -424,8 +421,8 @@ public final class WorkflowEngine extends SimEntity {
     /**
      * Sets the job received list.
      *
-     * @param <T> the generic type
-     * @param cloudletReceivedList the new job received list
+     * @param <T> the generic type extends Cloudlet
+     * @param jobsReceivedList the new job received list
      */
     private <T extends Cloudlet> void setJobsReceivedList(List<T> jobsReceivedList) {
         this.jobsReceivedList = jobsReceivedList;
@@ -464,10 +461,8 @@ public final class WorkflowEngine extends SimEntity {
     /**
      * Sets the scheduler list.
      *
-     * @param <T> the generic type
-     * @param vmList the new scheduler list
      */
-    private void setSchedulers(List list) {
+    private void setSchedulers(List<WorkflowScheduler> list) {
         this.scheduler = list;
     }
 
@@ -483,10 +478,8 @@ public final class WorkflowEngine extends SimEntity {
     /**
      * Sets the scheduler id list.
      *
-     * @param <T> the generic type
-     * @param vmList the new scheduler id list
      */
-    private void setSchedulerIds(List list) {
+    private void setSchedulerIds(List<Integer> list) {
         this.schedulerId = list;
     }
 
