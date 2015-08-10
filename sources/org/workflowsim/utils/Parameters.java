@@ -15,8 +15,9 @@
  */
 package org.workflowsim.utils;
 
-import java.util.List;
 import org.cloudbus.cloudsim.Log;
+
+import java.util.List;
 
 /**
  * This class includes most parameters a user can specify in a configuration
@@ -35,8 +36,8 @@ public class Parameters {
 
     public enum SchedulingAlgorithm {
 
-        MAXMIN, MINMIN, MCT, DATA, 
-        STATIC, FCFS, ROUNDROBIN, INVALID
+        MAXMIN, MINMIN, MCT, DATA, STATIC, FCFS, ROUNDROBIN, PSO,
+        HLH, GENETIC, IWO, INVALID
     }
     
     /**
@@ -53,7 +54,7 @@ public class Parameters {
     public enum FileType{
         NONE(0), INPUT(1), OUTPUT(2);
         public final int value;
-        private FileType(int fType){
+        FileType(int fType){
             this.value = fType;
         }
     }
@@ -64,7 +65,7 @@ public class Parameters {
     public enum ClassType{
         STAGE_IN(1), COMPUTE(2), STAGE_OUT(3), CLEAN_UP(4);
         public final int value;
-        private ClassType(int cType){
+        ClassType(int cType){
             this.value = cType;
         }
     }
@@ -77,7 +78,7 @@ public class Parameters {
     public enum CostModel{
         DATACENTER(1), VM(2);
         public final int value;
-        private CostModel(int model){
+        CostModel(int model){
             this.value = model;
         }
     }

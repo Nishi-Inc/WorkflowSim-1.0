@@ -15,8 +15,6 @@
  */
 package org.workflowsim;
 
-import java.util.HashMap;
-import java.util.List;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.Log;
@@ -25,16 +23,12 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.lists.VmList;
 import org.workflowsim.failure.FailureGenerator;
-import org.workflowsim.scheduling.DataAwareSchedulingAlgorithm;
-import org.workflowsim.scheduling.BaseSchedulingAlgorithm;
-import org.workflowsim.scheduling.FCFSSchedulingAlgorithm;
-import org.workflowsim.scheduling.MCTSchedulingAlgorithm;
-import org.workflowsim.scheduling.MaxMinSchedulingAlgorithm;
-import org.workflowsim.scheduling.MinMinSchedulingAlgorithm;
-import org.workflowsim.scheduling.RoundRobinSchedulingAlgorithm;
-import org.workflowsim.scheduling.StaticSchedulingAlgorithm;
+import org.workflowsim.scheduling.*;
 import org.workflowsim.utils.Parameters;
 import org.workflowsim.utils.Parameters.SchedulingAlgorithm;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * WorkflowScheduler represents a algorithm acting on behalf of a user. It hides
@@ -163,6 +157,18 @@ public class WorkflowScheduler extends DatacenterBroker {
             case ROUNDROBIN:
                 algorithm = new RoundRobinSchedulingAlgorithm();
                 break;
+            case HLH:
+//                algorithm = new HLHSchedulingAlgorithm();
+//                break;
+            case PSO:
+                algorithm = new PSOSchedulingAlgorithm();
+                break;
+            case GENETIC:
+//                algorithm = new GeneticSchedulingAlgorithm();
+//                break;
+            case IWO:
+//                algorithm = new IWOSchedulingAlgorithm();
+//                break;
             default:
                 algorithm = new StaticSchedulingAlgorithm();
                 break;

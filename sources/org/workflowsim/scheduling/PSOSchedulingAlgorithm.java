@@ -1,12 +1,16 @@
 package org.workflowsim.scheduling;
 
+import org.cloudbus.cloudsim.Cloudlet;
+import org.workflowsim.CondorVM;
+import org.workflowsim.WorkflowSimTags;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * The Class PSOSchedulingAlgorithm.
  */
-public class PSOSchedulingAlgorithm {
+public class PSOSchedulingAlgorithm extends BaseSchedulingAlgorithm {
 	
 	/** The Constant TARGET. */
 	private static final int TARGET = 50;
@@ -30,12 +34,12 @@ public class PSOSchedulingAlgorithm {
 	private static final int START_RANGE_MAX = 190;
 
 	/** The particles. */
-	private static ArrayList<Particle> particles = new ArrayList<Particle>();
+	private ArrayList<Particle> particles = new ArrayList<>();
 
 	/**
 	 * Initialize.
 	 */
-	private static void initialize() {
+	private void initialize() {
 		for (int i = 0; i < MAX_PARTICLES; i++) {
 			Particle newParticle = new Particle();
 			int total = 0;
@@ -47,25 +51,27 @@ public class PSOSchedulingAlgorithm {
 			newParticle.pBest(total);
 			particles.add(newParticle);
 		}
-		return;
 	}
 
 	/**
 	 * Instantiates a new PSO algorithm.
 	 */
-	private PSOSchedulingAlgorithm() {
+	public PSOSchedulingAlgorithm() {
+
+	}
+
+	@Override
+	public void run() throws Exception {
 		int gBest = 0;
-		int gBestTest = 0;
-		Particle aParticle = null;
+		int gBestTest;
+		Particle aParticle;
 		int epoch = 0;
 		boolean done = false;
 
 		initialize();
 
 		while (!done) {
-
 			if (epoch < MAX_EPOCHS) {
-
 				for (int i = 0; i < MAX_PARTICLES; i++) {
 					aParticle = particles.get(i);
 					for (int j = 0; j < MAX_INPUTS; j++) {
@@ -101,7 +107,94 @@ public class PSOSchedulingAlgorithm {
 				done = true;
 			}
 		}
-		return;
+
+		int vmSize = getVmList().size();
+		CondorVM firstIdleVm = null;
+		for (int j = 0; j < vmSize; j++) {
+			CondorVM vm = (CondorVM) getVmList().get(j);
+			if (vm.getState() == WorkflowSimTags.VM_STATUS_IDLE) {
+				firstIdleVm = vm;
+				break;
+			}
+		}
+		if (firstIdleVm != null) {
+			for (int j = 0; j < vmSize; j++) {
+				CondorVM vm = (CondorVM) getVmList().get(j);
+				if ((vm.getState() == WorkflowSimTags.VM_STATUS_IDLE)
+						&& vm.getCurrentRequestedTotalMips() > firstIdleVm.getCurrentRequestedTotalMips()) {
+					firstIdleVm = vm;
+				}
+			}
+			firstIdleVm.setState(WorkflowSimTags.VM_STATUS_BUSY);
+			minCloudlet.setVmId(firstIdleVm.getId());
+			this.getScheduledList().add(minCloudlet);
+		}
+
+
+
+
+
+
+
+
+
+
+
+		int size = getCloudletList().size();
+		hasChecked.clear();
+		for (int t = 0; t < size; t++) {
+			hasChecked.add(false);
+		}
+		for (int i = 0; i < size; i++) {
+			int minIndex = 0;
+			Cloudlet minCloudlet = null;
+			for (int j = 0; j < size; j++) {
+				Cloudlet cloudlet = (Cloudlet) getCloudletList().get(j);
+				if (!hasChecked.get(j)) {
+					minCloudlet = cloudlet;
+					minIndex = j;
+					break;
+				}
+			}
+			if (minCloudlet == null) {
+				break;
+			}
+
+
+			for (int j = 0; j < size; j++) {
+				Cloudlet cloudlet = (Cloudlet) getCloudletList().get(j);
+				if (hasChecked.get(j)) {
+					continue;
+				}
+				long length = cloudlet.getCloudletLength();
+				if (length < minCloudlet.getCloudletLength()) {
+					minCloudlet = cloudlet;
+					minIndex = j;
+				}
+			}
+			hasChecked.set(minIndex, true);
+
+			for (int j = 0; j < vmSize; j++) {
+				CondorVM vm = (CondorVM) getVmList().get(j);
+				if (vm.getState() == WorkflowSimTags.VM_STATUS_IDLE) {
+					firstIdleVm = vm;
+					break;
+				}
+			}
+			if (firstIdleVm == null) {
+				break;
+			}
+			for (int j = 0; j < vmSize; j++) {
+				CondorVM vm = (CondorVM) getVmList().get(j);
+				if ((vm.getState() == WorkflowSimTags.VM_STATUS_IDLE)
+						&& vm.getCurrentRequestedTotalMips() > firstIdleVm.getCurrentRequestedTotalMips()) {
+					firstIdleVm = vm;
+				}
+			}
+			firstIdleVm.setState(WorkflowSimTags.VM_STATUS_BUSY);
+			minCloudlet.setVmId(firstIdleVm.getId());
+			this.getScheduledList().add(minCloudlet);
+		}
 	}
 
 	/**
@@ -134,7 +227,7 @@ public class PSOSchedulingAlgorithm {
 				aParticle.velocity(vValue);
 			}
 		}
-		return;
+		
 	}
 
 	/**
@@ -162,7 +255,7 @@ public class PSOSchedulingAlgorithm {
 			}
 
 		} // i
-		return;
+		
 	}
 
 	/**
@@ -203,7 +296,7 @@ public class PSOSchedulingAlgorithm {
 			}
 		} // j
 		System.out.print("\n");
-		return;
+		
 	}
 
 	/**
@@ -225,7 +318,7 @@ public class PSOSchedulingAlgorithm {
 	private static int minimum() {
 		// Returns an array index.
 		int winner = 0;
-		boolean foundNewWinner = false;
+		boolean foundNewWinner;
 		boolean done = false;
 
 		while (!done) {
@@ -241,9 +334,7 @@ public class PSOSchedulingAlgorithm {
 				}
 			}
 
-			if (foundNewWinner == false) {
-				done = true;
-			}
+			done = !foundNewWinner;
 		}
 
 		return winner;
@@ -289,7 +380,6 @@ public class PSOSchedulingAlgorithm {
 		 */
 		public void data(int index, int value) {
 			this.mData[index] = value;
-			return;
 		}
 
 		/**
@@ -308,7 +398,6 @@ public class PSOSchedulingAlgorithm {
 		 */
 		public void pBest(int value) {
 			this.mpBest = value;
-			return;
 		}
 
 		/**
@@ -327,7 +416,6 @@ public class PSOSchedulingAlgorithm {
 		 */
 		public void velocity(double velocityScore) {
 			this.mVelocity = velocityScore;
-			return;
 		}
 	}
 
@@ -337,9 +425,8 @@ public class PSOSchedulingAlgorithm {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		PSOSchedulingAlgorithm pos = new PSOSchedulingAlgorithm();
-		PSOSchedulingAlgorithm.printSolution();
-		return;
+//		PSOSchedulingAlgorithm pos = new PSOSchedulingAlgorithm();
+//		PSOSchedulingAlgorithm.printSolution();
 	}
 
 }

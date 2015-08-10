@@ -15,6 +15,9 @@
  */
 package org.workflowsim.scheduling;
 
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.Vm;
+
 import java.util.List;
 
 /**
@@ -30,35 +33,35 @@ public interface SchedulingAlgorithmInterface {
      * Sets the job list.
      * @param list
      */
-    public void setCloudletList(List list);
+    void setCloudletList(List<Cloudlet> list);
 
     /**
      * Sets the vm list.
      * @param list
      */
-    public void setVmList(List list);
+    void setVmList(List<? extends Vm> list);
 
     /**
      * Gets the job list.
      * @return 
      */
-    public List getCloudletList();
+    List getCloudletList();
 
     /**
      * Gets the vm list.
      * @return 
      */
-    public List getVmList();
+    List getVmList();
 
     /**
      * the main function.
      * @throws java.lang.Exception
      */
-    public void run() throws Exception;
+    void run() throws Exception;
 
     /**
      * Gets the scheduled jobs.
      * @return 
      */
-    public List getScheduledList();
+    List<Cloudlet> getScheduledList();
 }

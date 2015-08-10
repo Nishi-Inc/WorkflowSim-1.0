@@ -15,10 +15,11 @@
  */
 package org.workflowsim.scheduling;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Vm;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The base scheduler has implemented the basic features. Every other scheduling method
@@ -47,16 +48,16 @@ public abstract class BaseSchedulingAlgorithm implements SchedulingAlgorithmInte
      * Initialize a BaseSchedulingAlgorithm
      */
     public BaseSchedulingAlgorithm() {
-        this.scheduledList = new ArrayList();
+        this.scheduledList = new ArrayList<>();
     }
 
     /**
      * Sets the job list.
      *
-     * @param list
+     * @param list    list of cloudlets
      */
     @Override
-    public void setCloudletList(List list) {
+    public void setCloudletList(List<Cloudlet> list) {
         this.cloudletList = list;
     }
 
@@ -66,8 +67,8 @@ public abstract class BaseSchedulingAlgorithm implements SchedulingAlgorithmInte
      * @param list
      */
     @Override
-    public void setVmList(List list) {
-        this.vmList = new ArrayList(list);
+    public void setVmList(List<? extends Vm> list) {
+        this.vmList = list;
     }
 
     /**
@@ -103,7 +104,7 @@ public abstract class BaseSchedulingAlgorithm implements SchedulingAlgorithmInte
      * @return job list
      */
     @Override
-    public List getScheduledList() {
+    public List<Cloudlet> getScheduledList() {
         return this.scheduledList;
     }
 }
